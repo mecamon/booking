@@ -1,17 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/justinas/nosurf"
 	"net/http"
 )
-
-func WriteToConsole(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-		fmt.Println("Hit the page")
-		next.ServeHTTP(writer, req)
-	})
-}
 
 //NoSurf adds csrf protection to every post request
 func NoSurf(next http.Handler) http.Handler {
