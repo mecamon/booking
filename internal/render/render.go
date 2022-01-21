@@ -3,6 +3,7 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/justinas/nosurf"
 	"github.com/mecamon/booking/pkg/config"
 	"github.com/mecamon/booking/pkg/models"
 	"html/template"
@@ -17,11 +18,12 @@ func NewTemplate(a *config.AppConfig) {
 	appConfig = a
 }
 
-func AddDefaultData(templateData *models.TemplateData) *models.TemplateData {
+func AddDefaultData(templateData *models.TemplateData, req *http.Request) *models.TemplateData {
+	templateData.CSRFToken = nosurf.Token(req)
 	return templateData
 }
 
-func RenderTemplate(writer http.ResponseWriter, tmpl string, templateData *models.TemplateData) {
+func RenderTemplate(writer http.ResponseWriter, req *http.Request, tmpl string, templateData *models.TemplateData) {
 
 	var templateCached map[string]*template.Template
 	if appConfig.UseCache {
@@ -37,7 +39,7 @@ func RenderTemplate(writer http.ResponseWriter, tmpl string, templateData *model
 
 	buf := new(bytes.Buffer)
 
-	templateData = AddDefaultData(templateData)
+	templateData = AddDefaultData(templateData, req)
 
 	_ = t.Execute(buf, templateData)
 
